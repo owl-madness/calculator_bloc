@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator_event.dart';
 import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,11 +12,18 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
     on<BackspacePressed>(_onBackspacePressed);
   }
 
-  FutureOr<void> _onDigitPressed(
+  void _onDigitPressed(
     DigitPressed event,
     Emitter<CalculatorState> emit,
   ) {
     final currentValue = state.currentValue;
+
+    if (currentValue != 'Error' &&
+        !state.justCalculated &&
+        !state.waitingForOperand &&
+        currentValue.replaceAll('.', '').length >= 15) {
+      return;
+    }
 
     final newValue =
         state.justCalculated || state.waitingForOperand || currentValue == '0'
@@ -147,8 +152,9 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
 
     emit(
       state.copyWith(
-        currentValue:
-            result % 1 == 0 ? result.toInt().toString() : result.toString(),
+        currentValue: result.isFinite && result % 1 == 0
+            ? result.toStringAsFixed(0)
+            : result.toString(),
         clearOperator: true,
         clearPreviousValue: true,
         justCalculated: true,

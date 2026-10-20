@@ -128,6 +128,10 @@ class CalculatorPage extends StatelessWidget {
   }
 
   String _formatNumber(double value) {
-    return value % 1 == 0 ? value.toInt().toString() : value.toString();
+    if (value.isFinite && value.abs() <= 9007199254740991) {
+      return value % 1 == 0 ? value.toInt().toString() : value.toString();
+    }
+
+    return value.toString();
   }
 }
