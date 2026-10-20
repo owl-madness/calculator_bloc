@@ -30,9 +30,10 @@ void main() {
         const CalculatorState(currentValue: '1'),
         const CalculatorState(currentValue: '12'),
         const CalculatorState(
-          currentValue: '0',
+          currentValue: '12',
           previousValue: 12,
           operator: '+',
+          waitingForOperand: true,
         ),
         const CalculatorState(
           currentValue: '5',
@@ -40,7 +41,7 @@ void main() {
           operator: '+',
         ),
         const CalculatorState(
-          currentValue: '17.0',
+          currentValue: '17',
           justCalculated: true,
         ),
       ],
@@ -63,9 +64,10 @@ void main() {
         const CalculatorState(currentValue: '1'),
         const CalculatorState(currentValue: '12'),
         const CalculatorState(
-          currentValue: '0',
+          currentValue: '12',
           previousValue: 12,
           operator: '+',
+          waitingForOperand: true,
         ),
         const CalculatorState(
           currentValue: '5',
@@ -73,9 +75,10 @@ void main() {
           operator: '+',
         ),
         const CalculatorState(
-          currentValue: '0',
+          currentValue: '5',
           previousValue: 17,
           operator: '+',
+          waitingForOperand: true,
         ),
         const CalculatorState(
           currentValue: '3',
@@ -83,7 +86,7 @@ void main() {
           operator: '+',
         ),
         const CalculatorState(
-          currentValue: '20.0',
+          currentValue: '20',
           justCalculated: true,
         ),
       ],
@@ -101,6 +104,12 @@ void main() {
       },
       expect: () => [
         const CalculatorState(currentValue: '1'),
+        const CalculatorState(
+          currentValue: '1',
+          previousValue: 1,
+          operator: '/',
+          waitingForOperand: true,
+        ),
         const CalculatorState(
           currentValue: '0',
           previousValue: 1,

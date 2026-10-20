@@ -15,17 +15,21 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
   }
 
   FutureOr<void> _onDigitPressed(
-      DigitPressed event, Emitter<CalculatorState> emit) {
+    DigitPressed event,
+    Emitter<CalculatorState> emit,
+  ) {
     final currentValue = state.currentValue;
 
-    final newValue = state.justCalculated || currentValue == '0'
-        ? event.digit
-        : currentValue + event.digit;
+    final newValue =
+        state.justCalculated || state.waitingForOperand || currentValue == '0'
+            ? event.digit
+            : currentValue + event.digit;
 
     emit(
       state.copyWith(
         currentValue: newValue,
         justCalculated: false,
+        waitingForOperand: false,
       ),
     );
   }
@@ -85,6 +89,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
             clearPreviousValue: true,
             clearOperator: true,
             justCalculated: true,
+            waitingForOperand: false,
           ),
         );
         return;
@@ -94,8 +99,9 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
         state.copyWith(
           previousValue: result,
           operator: event.operator,
-          currentValue: '0',
+          currentValue: state.currentValue,
           justCalculated: false,
+          waitingForOperand: true,
         ),
       );
       return;
@@ -106,8 +112,9 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
       state.copyWith(
         previousValue: currentNumber,
         operator: event.operator,
-        currentValue: '0',
+        currentValue: state.currentValue,
         justCalculated: false,
+        waitingForOperand: true,
       ),
     );
   }

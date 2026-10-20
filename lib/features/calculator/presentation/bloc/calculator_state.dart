@@ -5,12 +5,14 @@ class CalculatorState extends Equatable {
   final double? previousValue;
   final String? operator;
   final bool justCalculated;
+  final bool waitingForOperand;
 
   const CalculatorState({
     this.currentValue = '0',
     this.previousValue,
     this.operator,
     this.justCalculated = false,
+    this.waitingForOperand = false,
   });
 
   CalculatorState copyWith({
@@ -20,6 +22,7 @@ class CalculatorState extends Equatable {
     bool clearPreviousValue = false,
     bool clearOperator = false,
     bool? justCalculated,
+    bool? waitingForOperand,
   }) {
     return CalculatorState(
       currentValue: currentValue ?? this.currentValue,
@@ -27,6 +30,7 @@ class CalculatorState extends Equatable {
           clearPreviousValue ? null : previousValue ?? this.previousValue,
       operator: clearOperator ? null : operator ?? this.operator,
       justCalculated: justCalculated ?? this.justCalculated,
+      waitingForOperand: waitingForOperand ?? this.waitingForOperand,
     );
   }
 
@@ -36,5 +40,6 @@ class CalculatorState extends Equatable {
         previousValue,
         operator,
         justCalculated,
+        waitingForOperand,
       ];
 }
