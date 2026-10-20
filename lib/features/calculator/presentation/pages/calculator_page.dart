@@ -40,9 +40,17 @@ class CalculatorPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        state.currentValue,
-                        style: const TextStyle(fontSize: 40),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            state.currentValue,
+                            maxLines: 1,
+                            style: const TextStyle(fontSize: 40),
+                          ),
+                        ),
                       ),
                     ],
                   );
