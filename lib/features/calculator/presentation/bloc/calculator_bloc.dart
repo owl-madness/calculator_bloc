@@ -152,9 +152,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
 
     emit(
       state.copyWith(
-        currentValue: result.isFinite && result % 1 == 0
-            ? result.toStringAsFixed(0)
-            : result.toString(),
+        currentValue: _formatResult(result),
         clearOperator: true,
         clearPreviousValue: true,
         justCalculated: true,
@@ -202,5 +200,27 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
       default:
         return null;
     }
+  }
+
+  String _formatResult(double result) {
+    if (!result.isFinite) {
+      return 'Error';
+    }
+
+    if (result == 0) {
+      return '0';
+    }
+
+    if (result.abs() >= 1e15 || result.abs() < 1e-6) {
+      return result
+          .toStringAsExponential(6)
+          .replaceFirst(RegExp(r'\.?0+e'), 'e');
+    }
+
+    if (result % 1 == 0) {
+      return result.toStringAsFixed(0);
+    }
+
+    return result.toString();
   }
 }

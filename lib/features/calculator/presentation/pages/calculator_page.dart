@@ -20,10 +20,14 @@ class CalculatorPage extends StatelessWidget {
             children: [
               BlocBuilder<CalculatorBloc, CalculatorState>(
                 builder: (context, state) {
+                  debugPrint('Display currentValue: ${state.currentValue}');
+
                   final expression = state.previousValue != null &&
                           state.operator != null
                       ? '${_formatNumber(state.previousValue!)} ${_displayOperator(state.operator!)}'
                       : '';
+
+                  debugPrint('Display expression: $expression');
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
