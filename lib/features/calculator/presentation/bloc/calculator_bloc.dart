@@ -140,7 +140,8 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
 
     emit(
       state.copyWith(
-        currentValue: result.toString(),
+        currentValue:
+            result % 1 == 0 ? result.toInt().toString() : result.toString(),
         clearOperator: true,
         clearPreviousValue: true,
         justCalculated: true,
