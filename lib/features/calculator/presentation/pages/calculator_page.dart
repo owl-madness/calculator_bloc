@@ -18,20 +18,40 @@ class CalculatorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+
+    void onPressed(String label) => _onButtonPressed(context, label);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-          child: Column(
-            children: [
-              Expanded(child: _Display()),
-              const SizedBox(height: 16),
-              _Keypad(
-                rows: _rows,
-                onPressed: (label) => _onButtonPressed(context, label),
-              ),
-            ],
-          ),
+          padding: isLandscape
+              ? const EdgeInsets.all(12)
+              : const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: isLandscape
+              ? Row(
+                  children: [
+                    Expanded(flex: 4, child: _Display()),
+                    const SizedBox(width: 24),
+                    Expanded(
+                      flex: 5,
+                      child: _Keypad(
+                        rows: _rows,
+                        onPressed: onPressed,
+                        fillHeight: true,
+                        spacing: 8,
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Expanded(child: _Display()),
+                    const SizedBox(height: 16),
+                    _Keypad(rows: _rows, onPressed: onPressed),
+                  ],
+                ),
         ),
       ),
     );
@@ -67,13 +87,22 @@ class CalculatorPage extends StatelessWidget {
 }
 
 class _Keypad extends StatelessWidget {
-  const _Keypad({required this.rows, required this.onPressed});
+  const _Keypad({
+    required this.rows,
+    required this.onPressed,
+    this.fillHeight = false,
+    this.spacing = 12,
+  });
 
   final List<List<String>> rows;
   final ValueChanged<String> onPressed;
 
+  /// When true, key height is derived from the available height
+  /// (landscape) instead of the aspect ratio (portrait).
+  final bool fillHeight;
+  final double spacing;
+
   static const _columns = 4;
-  static const _spacing = 12.0;
   static const _aspectRatio = 1.15;
 
   @override
@@ -81,21 +110,25 @@ class _Keypad extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final cellWidth =
-            (constraints.maxWidth - _spacing * (_columns - 1)) / _columns;
-        final cellHeight = cellWidth / _aspectRatio;
+            (constraints.maxWidth - spacing * (_columns - 1)) / _columns;
+
+        final cellHeight = fillHeight && constraints.hasBoundedHeight
+            ? (constraints.maxHeight - spacing * (rows.length - 1)) /
+                rows.length
+            : cellWidth / _aspectRatio;
 
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             for (var i = 0; i < rows.length; i++) ...[
-              if (i > 0) const SizedBox(height: _spacing),
+              if (i > 0) SizedBox(height: spacing),
               SizedBox(
                 height: cellHeight,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     for (var j = 0; j < rows[i].length; j++) ...[
-                      if (j > 0) const SizedBox(width: _spacing),
+                      if (j > 0) SizedBox(width: spacing),
                       SizedBox(
                         width: _widthFor(rows[i][j], cellWidth),
                         child: CalculatorButton(
@@ -114,10 +147,10 @@ class _Keypad extends StatelessWidget {
     );
   }
 
-  // '0' spans the 3 columns left over beside '.', including the gaps between them.
+  // '0' spans 3 columns, including the gaps between them.
   double _widthFor(String label, double cellWidth) {
     final span = label == '0' ? 3 : 1;
-    return cellWidth * span + _spacing * (span - 1);
+    return cellWidth * span + spacing * (span - 1);
   }
 }
 
