@@ -8,91 +8,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CalculatorPage extends StatelessWidget {
   const CalculatorPage({super.key});
 
+  static const _rows = [
+    ['C', '⌫', '÷', '×'],
+    ['7', '8', '9', '−'],
+    ['4', '5', '6', '+'],
+    ['1', '2', '3', '='],
+    ['0', '.'],
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calculator'),
-      ),
       body: SafeArea(
-        child: Center(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             children: [
-              BlocBuilder<CalculatorBloc, CalculatorState>(
-                builder: (context, state) {
-                  debugPrint('Display currentValue: ${state.currentValue}');
-
-                  final expression = state.previousValue != null &&
-                          state.operator != null
-                      ? '${_formatNumber(state.previousValue!)} ${_displayOperator(state.operator!)}'
-                      : '';
-
-                  debugPrint('Display expression: $expression');
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          expression,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        SizedBox(
-                          width: double.infinity,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              state.currentValue,
-                              maxLines: 1,
-                              style: const TextStyle(fontSize: 40),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: GridView.count(
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  children: [
-                    ...[
-                      'C',
-                      '⌫',
-                      '÷',
-                      '×',
-                      '7',
-                      '8',
-                      '9',
-                      '−',
-                      '4',
-                      '5',
-                      '6',
-                      '+',
-                      '1',
-                      '2',
-                      '3',
-                      '=',
-                      '.',
-                      '0',
-                    ].map(
-                      (label) => CalculatorButton(
-                        label: label,
-                        onPressed: () => _onButtonPressed(context, label),
-                      ),
-                    ),
-                  ],
-                ),
+              Expanded(child: _Display()),
+              const SizedBox(height: 16),
+              _Keypad(
+                rows: _rows,
+                onPressed: (label) => _onButtonPressed(context, label),
               ),
             ],
           ),
@@ -128,6 +64,109 @@ class CalculatorPage extends StatelessWidget {
         bloc.add(const BackspacePressed());
     }
   }
+}
+
+class _Keypad extends StatelessWidget {
+  const _Keypad({required this.rows, required this.onPressed});
+
+  final List<List<String>> rows;
+  final ValueChanged<String> onPressed;
+
+  static const _columns = 4;
+  static const _spacing = 12.0;
+  static const _aspectRatio = 1.15;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cellWidth =
+            (constraints.maxWidth - _spacing * (_columns - 1)) / _columns;
+        final cellHeight = cellWidth / _aspectRatio;
+
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < rows.length; i++) ...[
+              if (i > 0) const SizedBox(height: _spacing),
+              SizedBox(
+                height: cellHeight,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (var j = 0; j < rows[i].length; j++) ...[
+                      if (j > 0) const SizedBox(width: _spacing),
+                      SizedBox(
+                        width: _widthFor(rows[i][j], cellWidth),
+                        child: CalculatorButton(
+                          label: rows[i][j],
+                          onPressed: () => onPressed(rows[i][j]),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
+  // '0' spans the 3 columns left over beside '.', including the gaps between them.
+  double _widthFor(String label, double cellWidth) {
+    final span = label == '0' ? 3 : 1;
+    return cellWidth * span + _spacing * (span - 1);
+  }
+}
+
+class _Display extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return BlocBuilder<CalculatorBloc, CalculatorState>(
+      builder: (context, state) {
+        final expression = state.previousValue != null && state.operator != null
+            ? '${_formatNumber(state.previousValue!)} ${_displayOperator(state.operator!)}'
+            : '';
+
+        return Align(
+          alignment: Alignment.bottomRight,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                expression,
+                style: TextStyle(
+                  fontSize: 22,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 4),
+              SizedBox(
+                width: double.infinity,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    state.currentValue,
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 64,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   String _displayOperator(String operator) {
     switch (operator) {
@@ -146,7 +185,6 @@ class CalculatorPage extends StatelessWidget {
     if (value.isFinite && value.abs() <= 9007199254740991) {
       return value % 1 == 0 ? value.toInt().toString() : value.toString();
     }
-
     return value.toString();
   }
 }
