@@ -29,30 +29,33 @@ class CalculatorPage extends StatelessWidget {
 
                   debugPrint('Display expression: $expression');
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        expression,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            state.currentValue,
-                            maxLines: 1,
-                            style: const TextStyle(fontSize: 40),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          expression,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.grey,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              state.currentValue,
+                              maxLines: 1,
+                              style: const TextStyle(fontSize: 40),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -80,8 +83,8 @@ class CalculatorPage extends StatelessWidget {
                       '2',
                       '3',
                       '=',
+                      '.',
                       '0',
-                      '.'
                     ].map(
                       (label) => CalculatorButton(
                         label: label,

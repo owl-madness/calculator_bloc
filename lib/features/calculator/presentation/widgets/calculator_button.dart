@@ -13,6 +13,10 @@ class CalculatorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        elevation: 1,
+        shadowColor: Colors.black26,
+      ),
       onPressed: onPressed,
       child: Text(label),
     );
