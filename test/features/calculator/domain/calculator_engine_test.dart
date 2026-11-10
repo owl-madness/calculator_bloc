@@ -1,11 +1,12 @@
 import 'package:calculator_bloc/features/calculator/domain/calculator_engine.dart';
+import 'package:calculator_bloc/features/calculator/domain/default_calculator_engine.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late CalculatorEngine engine;
 
   setUp(() {
-    engine = CalculatorEngine();
+    engine = DefaultCalculatorEngine();
   });
 
   group('CalculatorEngine', () {

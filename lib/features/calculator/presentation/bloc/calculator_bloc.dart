@@ -4,9 +4,9 @@ import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
-  final CalculatorEngine _engine = CalculatorEngine();
+  final CalculatorEngine engine;
 
-  CalculatorBloc() : super(const CalculatorState()) {
+  CalculatorBloc({required this.engine}) : super(const CalculatorState()) {
     on<DigitPressed>(_onDigitPressed);
     on<DecimalPressed>(_onDecimalPressed);
     on<OperatorPressed>(_onOperatorPressed);
@@ -84,7 +84,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
 
     // Calculate the pending operation first.
     if (previousValue != null && currentOperator != null) {
-      final result = _engine.calculate(
+      final result = engine.calculate(
         previousValue,
         currentNumber,
         currentOperator,
@@ -139,7 +139,7 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
       return;
     }
 
-    final result = _engine.calculate(first, second, operator);
+    final result = engine.calculate(first, second, operator);
 
     if (result == null) {
       emit(
@@ -188,7 +188,6 @@ class CalculatorBloc extends Bloc<CalculatorEvent, CalculatorState> {
       ),
     );
   }
-
 
   String _formatResult(double result) {
     if (!result.isFinite) {

@@ -1,14 +1,23 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:calculator_bloc/features/calculator/domain/calculator_engine.dart';
+import 'package:calculator_bloc/features/calculator/domain/default_calculator_engine.dart';
 import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator_event.dart';
 import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+class FakeCalculatorEngine implements CalculatorEngine {
+  @override
+  double? calculate(double first, double second, String operator) {
+    return 100;
+  }
+}
+
 void main() {
   group('CalculatorBloc', () {
     blocTest<CalculatorBloc, CalculatorState>(
       'emits currentValue 7 when DigitPressed(7) is added',
-      build: CalculatorBloc.new,
+      build: () => CalculatorBloc(engine: DefaultCalculatorEngine()),
       act: (bloc) => bloc.add(const DigitPressed('7')),
       expect: () => [
         const CalculatorState(currentValue: '7'),
@@ -16,8 +25,8 @@ void main() {
     );
 
     blocTest<CalculatorBloc, CalculatorState>(
-      'calculates 12 + 5 = 17',
-      build: CalculatorBloc.new,
+      'uses the injected engine result when EqualsPressed is added',
+      build: () => CalculatorBloc(engine: FakeCalculatorEngine()),
       act: (bloc) {
         bloc
           ..add(const DigitPressed('1'))
@@ -41,7 +50,7 @@ void main() {
           operator: '+',
         ),
         const CalculatorState(
-          currentValue: '17',
+          currentValue: '100',
           justCalculated: true,
         ),
       ],
@@ -49,7 +58,7 @@ void main() {
 
     blocTest<CalculatorBloc, CalculatorState>(
       'calculates sequential operations: 12 + 5 + 3 = 20',
-      build: CalculatorBloc.new,
+      build: () => CalculatorBloc(engine: DefaultCalculatorEngine()),
       act: (bloc) {
         bloc
           ..add(const DigitPressed('1'))
@@ -94,7 +103,7 @@ void main() {
 
     blocTest<CalculatorBloc, CalculatorState>(
       'emits Error when dividing by zero',
-      build: CalculatorBloc.new,
+      build: () => CalculatorBloc(engine: DefaultCalculatorEngine()),
       act: (bloc) {
         bloc
           ..add(const DigitPressed('1'))
@@ -123,7 +132,7 @@ void main() {
     );
     blocTest<CalculatorBloc, CalculatorState>(
       'removes the last digit when BackspacePressed is added',
-      build: CalculatorBloc.new,
+      build: () => CalculatorBloc(engine: DefaultCalculatorEngine()),
       act: (bloc) {
         bloc
           ..add(const DigitPressed('1'))
@@ -139,7 +148,7 @@ void main() {
 
     blocTest<CalculatorBloc, CalculatorState>(
       'resets display to 0 when backspace removes the only digit',
-      build: CalculatorBloc.new,
+      build: () => CalculatorBloc(engine: DefaultCalculatorEngine()),
       act: (bloc) {
         bloc
           ..add(const DigitPressed('7'))
@@ -153,7 +162,7 @@ void main() {
 
     blocTest<CalculatorBloc, CalculatorState>(
       'allows only one decimal point in a number',
-      build: CalculatorBloc.new,
+      build: () => CalculatorBloc(engine: DefaultCalculatorEngine()),
       act: (bloc) {
         bloc
           ..add(const DigitPressed('1'))

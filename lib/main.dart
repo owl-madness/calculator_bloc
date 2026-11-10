@@ -1,3 +1,5 @@
+import 'package:calculator_bloc/features/calculator/domain/calculator_engine.dart';
+import 'package:calculator_bloc/features/calculator/domain/default_calculator_engine.dart';
 import 'package:calculator_bloc/features/calculator/presentation/bloc/calculator_bloc.dart';
 import 'package:calculator_bloc/features/calculator/presentation/pages/calculator_page.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: BlocProvider(
-        create: (context) => CalculatorBloc(),
+        create: (context) => CalculatorBloc(
+          engine: DefaultCalculatorEngine(),
+        ),
         child: const CalculatorPage(),
       ),
     );

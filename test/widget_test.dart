@@ -1,3 +1,5 @@
+import 'package:calculator_bloc/features/calculator/domain/calculator_engine.dart';
+import 'package:calculator_bloc/features/calculator/domain/default_calculator_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +12,7 @@ void main() {
   Widget createWidgetUnderTest() {
     return MaterialApp(
       home: BlocProvider(
-        create: (_) => CalculatorBloc(),
+        create: (_) => CalculatorBloc(engine: DefaultCalculatorEngine()),
         child: const CalculatorPage(),
       ),
     );
